@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
+import { useEffect, useState } from "react";
+import styled, { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 
 import Layout from "./components/layout";
@@ -7,8 +8,8 @@ import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
 import CreateAccount from "./routes/createAccount";
-import { useEffect, useState } from "react";
 import LoadingScreen from "./components/loading-screen";
+import { auth } from "./firebase";
 
 // 라우팅 경로 설정
 const router = createBrowserRouter([
@@ -49,10 +50,17 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+const Wrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+`;
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const init = async () => {
     // wait for Firebase
+    await auth.authStateReady();
     setIsLoading(false);
     // setTimeout(() => setIsLoading(false), 2000);
   };
@@ -63,8 +71,10 @@ function App() {
 
   return (
     <>
-      <GlobalStyles />
-      {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
+      <Wrapper>
+        <GlobalStyles />
+        {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
+      </Wrapper>
     </>
   );
 }
